@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block question %}
+    <div class="col-md-3"></div>
+    <div class="col-md-6">
+        {% for q in questions %}
+            <form role="form" id="question_form">
+
+                <div class="form-group">
+                    <label for="question">
+                        Ваш вопрос
+                    </label>
+                    <textarea class="form-control" id="question" rows="3" required>{{ q.text }}</textarea>
+                </div>
+
+                <div class="form-group row">
+                    <div class="col-6">
+                        <label for="complexity">
+                            Сложность 🌟
+                        </label>
+                        <select class="custom-select" id="complexity" required>
+                          <option value="">Open this select menu</option>
+                          <option value="2" {% if q.complexity == 2 %} selected {% endif %}>2</option>
+                          <option value="3" {% if q.complexity == 3 %} selected {% endif %}>3</option>
+                          <option value="4" {% if q.complexity == 4 %} selected {% endif %}>4</option>
+                        </select>
+                    </div>
+
+                    <div class="col-6">
+                        <label for="category">
+                            Категория
+                        </label>
+                        <select class="custom-select" id="category" required>
+                          <option value="">Open this select menu</option>
+                          <option value="Кто" {% if q.complexity == "Кто" %} selected {% endif %}>Кто</option>
+                          <option value="Где" {% if q.complexity == "Где" %} selected {% endif %}>Где</option>
+                          <option value="Когда" {% if q.complexity == "Когда" %} selected {% endif %}>Когда</option>
+                          <option value="Почему" {% if q.complexity == "Почему" %} selected {% endif %}>Почему</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+
+                    <label for="answer">
+                        Ответ
+                    </label>
+                    <textarea class="form-control" id="answer" rows="3" required>{{ q.answer }}</textarea>
+
+                </div>
+
+                <input class="btn btn-primary" id="submit" title="Отправить" type="button" value="Отправить">
+
+                <div id="error" style="color: red;"></div>
+                <div id="success" style="color: green;"></div>
+            </form>
+        {% endfor %}
+    </div>
+    <div class="col-md-3"></div>
+{% endblock%}
+{% block footer %}
+    <script type="text/javascript" src="{{ static('js/send_question.js') }}"></script>
+{% endblock %}
