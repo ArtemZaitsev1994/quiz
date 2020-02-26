@@ -19,20 +19,39 @@ $(document).ready(function(){
         if ($('#question').val().length < 10) {
             errors += 'Слишком короткий вопрос.<br>'
         }
-        if (!($('#complexity').val() in complexity)) {
+        if (complexity.indexOf($('#complexity').val()) == -1) {
             errors += 'Не выбрана сложность.<br>'
         }
-        if (!($('#category').val() in categories)) {
+        if (categories.indexOf($('#category').val()) == -1) {
             errors += 'Не выбрана категория.<br>'
         }
         if ($('#answer').val().length < 1) {
             errors += 'Не указан ответ.<br>'
         }answer
-        showError(errors)
+        
+        console.log($('#complexity').val())
         if (errors){
+            showError(errors)
             return
         }
-        showSucces()
+
+        q_data = {
+            'text': $('#question').val(),
+            'complexity': $('#complexity').val(),
+            'category': $('#category').val(),
+            'answer': $('#answer').val()
+        }
+        console.log(q_data)
+        $.ajax({
+            dataType: 'json',
+            url: '/questions',
+            type: 'POST',
+            data: JSON.stringify(q_data),
+            success: function(data) {
+                console.log(data)
+                showSucces()
+            }
+        });
 
     })
 })

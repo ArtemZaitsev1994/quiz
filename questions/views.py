@@ -8,16 +8,16 @@ class Question(web.View):
 
     @aiohttp_jinja2.template('add_question.html')
     async def get(self):
-        qs = await app['models']['questions'].get_rand_question(6)
-        return web.json_response(qs)
+        return {}
 
     async def post(self):
-        data = self.request.json()
+        data = await self.request.json()
+        print(data)
         for key in ['text', 'answer']:
             data[key] = html.escape(data[key], quote=True)
         data['complexity'] = int(data['complexity'])
 
-        return web.json_response(await app['models']['questions'].add_question(data))
+        return web.json_response(await self.request.app['models']['questions'].add_question(data))
 
 
 class NotConfirmedQuestion(web.View):
@@ -26,7 +26,7 @@ class NotConfirmedQuestion(web.View):
     async def get(self):
         PER_PAGE = 10
         page = self.request.json().page or None
-        qs = await app['models']['not_conf_q'].get_part(page, PER_PAGE)
+        qs = await self.request.app['models']['not_conf_q'].get_part(page, PER_PAGE)
 
         return web.json_response(qs)
 
@@ -39,8 +39,13 @@ class NotConfirmedQuestion(web.View):
         return web.json_response(await app['models']['questions'].add_question(data))
 
 
+@aiohttp_jinja2.template('question.html')
+async def start_game(request):
+    qs = await request.app['models']['questions'].get_random_question(6)
+    return {'questions': qs}
+
 async def get_rand_question(request):
-    qs = await app['models']['questions'].get_rand_question(1)
+    qs, *_ = await request.app['models']['questions'].get_random_question(1)
     return web.json_response(qs)
 
 

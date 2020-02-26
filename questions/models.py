@@ -12,15 +12,16 @@ class Question:
         self.collection = self.db[QUESTION_COLLECTION]
 
     async def get_random_question(self, count) -> Dict[str, Any]:
-        q = self.collection.aggregate([{ '$sample': { 'size': count} }])
-        q['_id'] = str(q['_id'])
-        return q
+        qs = await self.collection.aggregate([{ '$sample': { 'size': count} }]).to_list(length=None)
+        for q in qs:
+            q['_id'] = str(q['_id'])
+        return qs
 
     async def add_question(self, data) -> bool:
         keys = {'category', 'text', 'complexity'}
         if len(keys - set(data.keys())) != 0:
             return False
-        return bool(await self.collection.insert(data))
+        return bool(await self.collection.insert_one(data))
 
 
 class NotConfirmedQuestion:
@@ -37,4 +38,4 @@ class NotConfirmedQuestion:
         keys = {'category', 'text', 'complexity', 'answer'}
         if len(keys - set(data.keys())) != 0:
             return False
-        return bool(await self.collection.insert(data))
+        return bool(await self.collection.insert_one(data))
