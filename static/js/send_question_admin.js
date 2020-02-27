@@ -14,20 +14,21 @@ $(document).ready(function(){
     }
 
     $('#submit').click(function(e){
+        var this_id = this.value
         errors = ''
 
-        if ($('#question').val().length < 10) {
+        if ($('#question_' + this_id).val().length < 10) {
             errors += 'Слишком короткий вопрос.<br>'
         }
-        if (complexity.indexOf($('#complexity').val()) == -1) {
+        if (complexity.indexOf($('#complexity_' + this_id).val()) == -1) {
             errors += 'Не выбрана сложность.<br>'
         }
-        if (categories.indexOf($('#category').val()) == -1) {
+        if (categories.indexOf($('#category_' + this_id).val()) == -1) {
             errors += 'Не выбрана категория.<br>'
         }
-        if ($('#answer').val().length < 1) {
+        if ($('#answer_' + this_id).val().length < 1) {
             errors += 'Не указан ответ.<br>'
-        }
+        }answer
 
         if (errors){
             showError(errors)
@@ -39,7 +40,8 @@ $(document).ready(function(){
             'complexity': $('#complexity').val(),
             'category': $('#category').val(),
             'answer': $('#answer').val(),
-            'type': 'questions'
+            'type': 'questions',
+            'not_conf_id': this_id
         }
 
         $.ajax({
@@ -48,8 +50,8 @@ $(document).ready(function(){
             type: 'POST',
             data: JSON.stringify(q_data),
             success: function(data) {
-                console.log(data)
-                showSucces()
+                    $(`#${this_id}`).css('display', 'none')
+                });
             }
         });
 

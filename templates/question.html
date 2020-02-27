@@ -1,9 +1,7 @@
 {% extends 'base.html' %}
 
-{% block question %}
+{% block content %}
     {% for q in questions %}
-         <div class="col-md-3"></div>
-                <div class="col-md-6">
                     <div class="card">
                       <h5 class="card-header" id="q_header_{{q._id}}">
                           <p>
@@ -37,8 +35,6 @@
                           </div>
 
                     </div>
-                </div>
-        <div class="col-md-3"></div>
     {% endfor %}
 {% endblock%}
 {% block footer %}

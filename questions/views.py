@@ -12,31 +12,35 @@ class Question(web.View):
 
     async def post(self):
         data = await self.request.json()
-        print(data)
+        q_type = data.pop('type')
+        # проверка на админа
+        if q_type == 'questions' and False:
+            return web.json_response({'error': 'Access denied'})
+
         for key in ['text', 'answer']:
             data[key] = html.escape(data[key], quote=True)
         data['complexity'] = int(data['complexity'])
 
-        return web.json_response(await self.request.app['models']['questions'].add_question(data))
+        result = web.json_response(await self.request.app['models'][q_type].add_question(data))
+        if data.get('not_conf_id'):
+            await self.request.app['models']['not_conf_q'].delete_q(data['not_conf_id'])
+
+        return web.json_response(bool(result))
 
 
-class NotConfirmedQuestion(web.View):
+class AdminPanel(web.View):
 
     @aiohttp_jinja2.template('admin/questions.html')
     async def get(self):
         PER_PAGE = 10
-        page = self.request.json().page or None
-        qs = await self.request.app['models']['not_conf_q'].get_part(page, PER_PAGE)
+        page = request.rel_url.query.get('page', 1)
+        qs, pagination = await self.request.app['models']['not_conf_q'].get_part(page, PER_PAGE)
 
-        return web.json_response(qs)
+        return {'questions': qs, 'pagination': pagination}
 
-    async def post(self):
-        data = self.request.json()
-        for key in ['text', 'answer']:
-            data[key] = html.escape(data[key], quote=True)
-        data['complexity'] = int(data['complexity'])
-
-        return web.json_response(await app['models']['questions'].add_question(data))
+    async def delete(self):
+        json_data = await self.request.json()
+        return await self.request.app['models']['not_conf_q'].delete_q(json_data['id'])
 
 
 @aiohttp_jinja2.template('question.html')
@@ -54,6 +58,6 @@ async def main_redirect(request):
     raise web.HTTPFound(location=location)
 
 
-async def admin_redirect(request):
-    location = request.app.router['not_conf_q'].url_for()
-    raise web.HTTPFound(location=location)
+@aiohttp_jinja2.template('about.html')
+async def about(request):
+    return {}

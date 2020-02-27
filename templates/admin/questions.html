@@ -1,24 +1,22 @@
 {% extends 'base.html' %}
 
-{% block question %}
-    <div class="col-md-3"></div>
-    <div class="col-md-6">
+{% block content %}
         {% for q in questions %}
-            <form role="form" id="question_form">
+            <form role="form" id="{{ q._id }}">
 
                 <div class="form-group">
-                    <label for="question">
-                        Ваш вопрос
+                    <label for="question_{{q._id}}">
+                        Вопрос
                     </label>
-                    <textarea class="form-control" id="question" rows="3" required>{{ q.text }}</textarea>
+                    <textarea class="form-control" id="question_{{q._id}}" rows="3" required>{{ q.text }}</textarea>
                 </div>
 
                 <div class="form-group row">
                     <div class="col-6">
-                        <label for="complexity">
+                        <label for="complexity_{{q._id}}">
                             Сложность 🌟
                         </label>
-                        <select class="custom-select" id="complexity" required>
+                        <select class="custom-select" id="complexity_{{q._id}}" required>
                           <option value="">Open this select menu</option>
                           <option value="2" {% if q.complexity == 2 %} selected {% endif %}>2</option>
                           <option value="3" {% if q.complexity == 3 %} selected {% endif %}>3</option>
@@ -27,10 +25,10 @@
                     </div>
 
                     <div class="col-6">
-                        <label for="category">
+                        <label for="category_{{q._id}}">
                             Категория
                         </label>
-                        <select class="custom-select" id="category" required>
+                        <select class="custom-select" id="category_{{q._id}}" required>
                           <option value="">Open this select menu</option>
                           <option value="Кто" {% if q.complexity == "Кто" %} selected {% endif %}>Кто</option>
                           <option value="Где" {% if q.complexity == "Где" %} selected {% endif %}>Где</option>
@@ -42,22 +40,36 @@
 
                 <div class="form-group">
 
-                    <label for="answer">
+                    <label for="answer_{{q._id}}">
                         Ответ
                     </label>
-                    <textarea class="form-control" id="answer" rows="3" required>{{ q.answer }}</textarea>
+                    <textarea class="form-control" id="answer_{{q._id}}" rows="3" required>{{ q.answer }}</textarea>
 
                 </div>
 
-                <input class="btn btn-primary" id="submit" title="Отправить" type="button" value="Отправить">
+                <input class="btn btn-primary" id="submit" title="Сохранить" type="button" value="{{ q._id }}">
+                <input class="btn btn-danger" id="delete" title="Удалить" type="button" value="{{ q._id }}">
 
                 <div id="error" style="color: red;"></div>
                 <div id="success" style="color: green;"></div>
             </form>
         {% endfor %}
-    </div>
-    <div class="col-md-3"></div>
 {% endblock%}
+
+<nav aria-label="Page navigation example">
+  <ul class="pagination justify-content-center">
+    <li class="page-item {% if pagination.page <= 1 %}disabled{% endif %}">
+      <a class="page-link" href="{{ '/admin?page=%s'%pagination.page-1|urlencode }}" tabindex="-1">Previous</a>
+    </li>
+    <!--<li class="page-item"><a class="page-link" href="{{ '/admin?page=%s'%pagination.page-1|urlencode }}">1</a></li>-->
+    <!--<li class="page-item"><a class="page-link" href="{{ '/admin?page=%s'%pagination.page|urlencode }}">2</a></li>-->
+    <!--<li class="page-item"><a class="page-link" href="{{ '/admin?page=%s'%pagination.page11|urlencode }}">3</a></li>-->
+    <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
+      <a class="page-link" href="{{ '/admin?page=%s'%pagination.page+1|urlencode }}">Next</a>
+    </li>
+  </ul>
+</nav>
+
 {% block footer %}
     <script type="text/javascript" src="{{ static('js/send_question.js') }}"></script>
 {% endblock %}
