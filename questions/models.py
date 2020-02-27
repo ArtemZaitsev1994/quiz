@@ -21,12 +21,14 @@ class BaseQuestion:
     async def get_part(self, page, per_page) -> List[Dict[str, Any]]:
         page = page or 1
         all_qs = self.collection.find()
-        count_qs = await all_qs.count()
+        count_qs = await self.collection.count_documents({})
         has_next = count_qs > 10
-        qs = await all_qs.skip(page * per_page).limit(per_page).to_list(length=None)
-
+        qs = await all_qs.skip((page - 1) * per_page).limit(per_page).to_list(length=None)
+        
         pagination = {
             'has_next': has_next,
+            'prev': page - 1 if page > 1 else None,
+            'next': page + 1 if has_next else None,
             'page': page,
             'per_page': per_page,
             'max': count_qs // per_page if count_qs % per_page == 0 else count_qs // per_page + 1
@@ -41,9 +43,11 @@ class BaseQuestion:
         return qs
 
     async def delete_q(self, _id) -> bool:
-        result = await
-        self.collection.delete_many({'_id': ObjectId(_id)})
+        result = await self.collection.delete_many({'_id': ObjectId(_id)})
         return result
+
+    async def clear_db(self):
+        await self.collection.drop()
 
 
 class Question(BaseQuestion):

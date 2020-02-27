@@ -12,6 +12,7 @@ class Question(web.View):
 
     async def post(self):
         data = await self.request.json()
+
         q_type = data.pop('type')
         # проверка на админа
         if q_type == 'questions' and False:
@@ -33,7 +34,13 @@ class AdminPanel(web.View):
     @aiohttp_jinja2.template('admin/questions.html')
     async def get(self):
         PER_PAGE = 10
-        page = request.rel_url.query.get('page', 1)
+        page = self.request.rel_url.query.get('page', 1)
+        try:
+            page = int(page)
+        except ValueError:
+            return web.HTTPBadRequest()
+        if page < 0:
+            page *= -1
         qs, pagination = await self.request.app['models']['not_conf_q'].get_part(page, PER_PAGE)
 
         return {'questions': qs, 'pagination': pagination}
@@ -45,12 +52,19 @@ class AdminPanel(web.View):
 
 @aiohttp_jinja2.template('question.html')
 async def start_game(request):
-    qs = await request.app['models']['questions'].get_random_question(6)
-    return {'questions': qs}
+    qs = await request.app['models']['questions'].get_random_question(3)
+    return {'questions': qs, 'q_ids': '.'.join([q['_id'] for q in qs])}
 
 async def get_rand_question(request):
-    qs, *_ = await request.app['models']['questions'].get_random_question(1)
-    return web.json_response(qs)
+    q_number = 1
+    q_ids = (await request.json()).get('ids')
+    if q_ids:
+        q_number = len(q_ids) + 1
+    qs = await request.app['models']['questions'].get_random_question(q_number)
+    if len(qs) <= len(q_ids):
+        return web.json_response({'warning': 'no more questions'})
+    q = next((x for x in qs if str(x['_id']) not in q_ids))
+    return web.json_response(q)
 
 
 async def main_redirect(request):
@@ -60,4 +74,9 @@ async def main_redirect(request):
 
 @aiohttp_jinja2.template('about.html')
 async def about(request):
+    return {}
+
+
+@aiohttp_jinja2.template('contacts.html')
+async def contacts(request):
     return {}

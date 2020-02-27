@@ -30,10 +30,10 @@
                         </label>
                         <select class="custom-select" id="category_{{q._id}}" required>
                           <option value="">Open this select menu</option>
-                          <option value="Кто" {% if q.complexity == "Кто" %} selected {% endif %}>Кто</option>
-                          <option value="Где" {% if q.complexity == "Где" %} selected {% endif %}>Где</option>
-                          <option value="Когда" {% if q.complexity == "Когда" %} selected {% endif %}>Когда</option>
-                          <option value="Почему" {% if q.complexity == "Почему" %} selected {% endif %}>Почему</option>
+                          <option value="Кто" {% if q.category == "Кто" %} selected {% endif %}>Кто</option>
+                          <option value="Где" {% if q.category == "Где" %} selected {% endif %}>Где</option>
+                          <option value="Когда" {% if q.category == "Когда" %} selected {% endif %}>Когда</option>
+                          <option value="Почему" {% if q.category == "Почему" %} selected {% endif %}>Почему</option>
                         </select>
                     </div>
                 </div>
@@ -47,29 +47,31 @@
 
                 </div>
 
-                <input class="btn btn-primary" id="submit" title="Сохранить" type="button" value="{{ q._id }}">
-                <input class="btn btn-danger" id="delete" title="Удалить" type="button" value="{{ q._id }}">
+                <input class="btn btn-primary submit" title="Сохранить" type="button" q_id="{{ q._id }}" value="Сохранить">
+                <input class="btn btn-danger delete" title="Удалить" type="button" q_id="{{ q._id }}" value="Удалить">
 
                 <div id="error" style="color: red;"></div>
                 <div id="success" style="color: green;"></div>
             </form>
+            <hr>
+            <hr>
         {% endfor %}
 {% endblock%}
 
+{% block pagination %}
 <nav aria-label="Page navigation example">
   <ul class="pagination justify-content-center">
     <li class="page-item {% if pagination.page <= 1 %}disabled{% endif %}">
-      <a class="page-link" href="{{ '/admin?page=%s'%pagination.page-1|urlencode }}" tabindex="-1">Previous</a>
+      <a class="page-link" href="{{ '/admin?page=%s'%pagination.prev|urlencode }}" tabindex="-1">Previous</a>
     </li>
-    <!--<li class="page-item"><a class="page-link" href="{{ '/admin?page=%s'%pagination.page-1|urlencode }}">1</a></li>-->
-    <!--<li class="page-item"><a class="page-link" href="{{ '/admin?page=%s'%pagination.page|urlencode }}">2</a></li>-->
-    <!--<li class="page-item"><a class="page-link" href="{{ '/admin?page=%s'%pagination.page11|urlencode }}">3</a></li>-->
     <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
-      <a class="page-link" href="{{ '/admin?page=%s'%pagination.page+1|urlencode }}">Next</a>
+      <a class="page-link" href="{{ '/admin?page=%s'%pagination.next|urlencode }}">Next</a>
     </li>
   </ul>
 </nav>
+{% endblock %}
 
 {% block footer %}
-    <script type="text/javascript" src="{{ static('js/send_question.js') }}"></script>
+    <script type="text/javascript" src="{{ static('js/send_question_admin.js') }}"></script>
+    <script type="text/javascript" src="{{ static('js/delete_question.js') }}"></script>
 {% endblock %}

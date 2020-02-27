@@ -13,8 +13,8 @@ $(document).ready(function(){
         $('#success').html('Вопрос успешно отправлен.');
     }
 
-    $('#submit').click(function(e){
-        var this_id = this.value
+    $('.submit').click(function(e){
+        var this_id = this.getAttribute('q_id')
         errors = ''
 
         if ($('#question_' + this_id).val().length < 10) {
@@ -28,7 +28,7 @@ $(document).ready(function(){
         }
         if ($('#answer_' + this_id).val().length < 1) {
             errors += 'Не указан ответ.<br>'
-        }answer
+        }
 
         if (errors){
             showError(errors)
@@ -36,10 +36,10 @@ $(document).ready(function(){
         }
 
         q_data = {
-            'text': $('#question').val(),
-            'complexity': $('#complexity').val(),
-            'category': $('#category').val(),
-            'answer': $('#answer').val(),
+            'text': $('#question_' + this_id).val(),
+            'complexity': $('#complexity_' + this_id).val(),
+            'category': $('#category_' + this_id).val(),
+            'answer': $('#answer_' + this_id).val(),
             'type': 'questions',
             'not_conf_id': this_id
         }
@@ -50,10 +50,8 @@ $(document).ready(function(){
             type: 'POST',
             data: JSON.stringify(q_data),
             success: function(data) {
-                    $(`#${this_id}`).css('display', 'none')
-                });
+                $(`#${this_id}`).css('display', 'none')
             }
         });
-
     })
 })

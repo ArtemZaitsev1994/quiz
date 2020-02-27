@@ -26,7 +26,7 @@
                         <a class="nav-link" href="{{ '/about'|urlencode }}">Об игре</a>
                     </li>
                     <li class="nav-item ml-md-auto">
-                        <a class="nav-link disabled" href="#">Контакты</a>
+                        <a class="nav-link disabled" href="{{ '/contacts'|urlencode }}">Контакты</a>
                     </li>
                 </ul>
             </div>
@@ -50,6 +50,9 @@
         </div>
     </div>
 </body>
+{% block pagination %}
+{% endblock %}
+
 {% block footer %}
 {% endblock %}
 </html>

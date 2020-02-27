@@ -39,7 +39,7 @@ $(document).ready(function(){
             'complexity': $('#complexity').val(),
             'category': $('#category').val(),
             'answer': $('#answer').val(),
-            'type': 'questions'
+            'type': 'not_conf_q'
         }
 
         $.ajax({

@@ -21,7 +21,7 @@ app['static_root_url'] = '/static'
 
 app.client = ma.AsyncIOMotorClient(MONGO_HOST)
 app.db = app.client[MONGO_DB_NAME]
-print(app.db)
+
 app['models'] = {
 	'questions': Question(app.db),
 	'not_conf_q': NotConfirmedQuestion(app.db)
