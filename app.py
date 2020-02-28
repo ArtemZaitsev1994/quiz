@@ -1,16 +1,24 @@
 import asyncio
 import aiohttp_jinja2
 import jinja2
-from motor import motor_asyncio as ma
-
 from aiohttp import web
+from motor import motor_asyncio as ma
+from aiohttp_session.redis_storage import RedisStorage
+from aiohttp_session import session_middleware
+
 from routes import routes
+from middlewares improt authorize
 from settings import MONGO_DB_NAME, MONGO_HOST, STATIC_PATH
 from questions.models import Question, NotConfirmedQuestion
+from utils import make_redis_pool
+
 
 loop = asyncio.get_event_loop()
+redis_pool = loop.run_until_complete(make_redis_pool())
+storage = RedisStorage(redis_pool)
+session_redis_middleware = session_middleware(storage)
 
-app = web.Application()
+app = web.Application(middlewares=[session_redis_middleware, authorize])
 aiohttp_jinja2.setup(app, loader=jinja2.FileSystemLoader('templates'))
 
 # add some urls
