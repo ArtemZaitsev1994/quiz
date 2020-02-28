@@ -1,6 +1,6 @@
 $(document).ready(function(){
 
-    q_ids = $('#my-data').data().q_ids.split('.')
+    q_ids = $('#my-data').data().q_ids
 
     $('.q').on('click', function(){
         var this_id = this.value
@@ -9,9 +9,9 @@ $(document).ready(function(){
 
         $.ajax({
             dataType: 'json',
-            url: '/random_question',
-            type: 'PUT',
-            data: JSON.stringify(send_data),
+            url: '/question',
+            type: 'GET',
+            data: {'ids': q_ids},
             success: function(data) {
                 // $('#q_complexity_' + this_id)[0].innerHTML = `Сложность: ${'🌟'.repeat(data.complexity)}.`
                 // $('#q_complexity_' + this_id)[0].attr('id', '#q_complexity_' + data._id)
@@ -58,7 +58,7 @@ $(document).ready(function(){
                     $('#q_' + this_id).val(data._id)
                     $('#q_' + this_id)[0].id = `q_${data._id}`
 
-                    q_ids.push(data._id)
+                    q_ids += `.{data._id}`
                 }
                 
 
@@ -67,4 +67,4 @@ $(document).ready(function(){
 
 
     })
-})
+});

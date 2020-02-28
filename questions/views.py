@@ -6,11 +6,24 @@ from aiohttp import web
 
 class Question(web.View):
 
-    @aiohttp_jinja2.template('add_question.html')
     async def get(self):
-        return {}
+        """Отдаем рандомный вопрос, приходит список с id уже игравшими вопросами"""
+        q_ids = self.request.rel_url.query.get('q_ids', [])
+        q_number = 1
+        if q_ids:
+            q_ids = q_ids.split('.')
+            q_number = len(q_ids) + 1
+
+        qs = await request.app['models']['questions'].get_random_question(q_number)
+
+        if len(qs) <= len(q_ids):
+            return web.json_response({'warning': 'no more questions'})
+
+        q = next((x for x in qs if str(x['_id']) not in q_ids))
+        return web.json_response(q)
 
     async def post(self):
+        """Создание вопроса"""
         data = await self.request.json()
 
         q_type = data.pop('type')
@@ -33,6 +46,7 @@ class AdminPanel(web.View):
 
     @aiohttp_jinja2.template('admin/questions.html')
     async def get(self):
+        """Получаем по 10 предложенных вопросов"""
         PER_PAGE = 10
         page = self.request.rel_url.query.get('page', 1)
         try:
@@ -46,30 +60,23 @@ class AdminPanel(web.View):
         return {'questions': qs, 'pagination': pagination}
 
     async def delete(self):
+        """Удаление вопроса из предложенных"""
         json_data = await self.request.json()
         return await self.request.app['models']['not_conf_q'].delete_q(json_data['id'])
 
 
-@aiohttp_jinja2.template('question.html')
-async def start_game(request):
-    qs = await request.app['models']['questions'].get_random_question(3)
-    return {'questions': qs, 'q_ids': '.'.join([q['_id'] for q in qs])}
+class Game(web.View):
 
-async def get_rand_question(request):
-    q_number = 1
-    q_ids = (await request.json()).get('ids')
-    if q_ids:
-        q_number = len(q_ids) + 1
-    qs = await request.app['models']['questions'].get_random_question(q_number)
-    if len(qs) <= len(q_ids):
-        return web.json_response({'warning': 'no more questions'})
-    q = next((x for x in qs if str(x['_id']) not in q_ids))
-    return web.json_response(q)
+    @aiohttp_jinja2.template('question.html')
+    async def get(request):
+        """Стартует игру, отдает 6 вопросов"""
+        qs = await request.app['models']['questions'].get_random_question(3)
+        return {'questions': qs, 'q_ids': '.'.join([q['_id'] for q in qs])}
 
 
-async def main_redirect(request):
-    location = request.app.router['question'].url_for()
-    raise web.HTTPFound(location=location)
+@aiohttp_jinja2.template('create_question_form.html')
+async def get_create_question_form(request):
+    return {}
 
 
 @aiohttp_jinja2.template('about.html')
@@ -80,3 +87,8 @@ async def about(request):
 @aiohttp_jinja2.template('contacts.html')
 async def contacts(request):
     return {}
+
+
+async def main_redirect(request):
+    location = request.app.router['question'].url_for()
+    raise web.HTTPFound(location=location)

@@ -3,20 +3,20 @@ from questions.views import (
 	about,
 	contacts,
 	main_redirect,
-	get_rand_question,
-	start_game,
+    Game,
+    get_create_question_form,
 	Question,
 )
 
 
 routes = [
-    ('GET', '/',                main_redirect,     'main_redirect'),
-    ('*',   '/questions',       Question,          'question'),
-    ('PUT', '/random_question', get_rand_question, 'random_question'),
-    ('GET', '/start_game',      start_game,        'start_game'),
+    ('GET', '/',                main_redirect,            'main_redirect'),
+    ('*',   '/questions',       Question,                 'question'),
+    ('PUT', '/create_question', get_create_question_form, 'create_question_form'),
+    ('*',   '/game',            Game,                     'start_game'),
 
-    ('*',   '/admin',           AdminPanel,        'admin'),
+    ('*',   '/admin',    AdminPanel, 'admin'),
 
-    ('GET', '/about',           about,             'about'),
-    ('GET', '/contacts',        contacts,          'contacts')
+    ('GET', '/about',    about,      'about'),
+    ('GET', '/contacts', contacts,   'contacts')
 ]
