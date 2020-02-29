@@ -9,7 +9,7 @@ $(document).ready(function(){
 
         $.ajax({
             dataType: 'json',
-            url: '/question',
+            url: '/questions',
             type: 'GET',
             data: {'ids': q_ids},
             success: function(data) {
@@ -58,7 +58,7 @@ $(document).ready(function(){
                     $('#q_' + this_id).val(data._id)
                     $('#q_' + this_id)[0].id = `q_${data._id}`
 
-                    q_ids += `.{data._id}`
+                    q_ids += `.${data._id}`
                 }
                 
 

@@ -24,5 +24,7 @@ if isfile('.env'):
 
     MONGO_HOST = os.getenv('MONGO_HOST')
     MONGO_DB_NAME = env.str('MONGO_DB_NAME')
+
+    REDIS_HOST = env.tuple('REDIS_HOST')
 else:
     raise SystemExit('Create an env-file please.!')

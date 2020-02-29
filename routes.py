@@ -4,6 +4,7 @@ from questions.views import (
 	contacts,
 	main_redirect,
     Game,
+    GameMobile,
     get_create_question_form,
 	Question,
 )
@@ -12,8 +13,9 @@ from questions.views import (
 routes = [
     ('GET', '/',                main_redirect,            'main_redirect'),
     ('*',   '/questions',       Question,                 'question'),
-    ('PUT', '/create_question', get_create_question_form, 'create_question_form'),
+    ('GET', '/create_question', get_create_question_form, 'create_question_form'),
     ('*',   '/game',            Game,                     'start_game'),
+    ('*',   '/game_mobile',     GameMobile,               'start_game_mobile'),
 
     ('*',   '/admin',    AdminPanel, 'admin'),
 

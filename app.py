@@ -7,7 +7,7 @@ from aiohttp_session.redis_storage import RedisStorage
 from aiohttp_session import session_middleware
 
 from routes import routes
-from middlewares improt authorize
+from middlewares import authorize
 from settings import MONGO_DB_NAME, MONGO_HOST, STATIC_PATH
 from questions.models import Question, NotConfirmedQuestion
 from utils import make_redis_pool

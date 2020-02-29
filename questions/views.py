@@ -7,14 +7,14 @@ from aiohttp import web
 class Question(web.View):
 
     async def get(self):
-        """Отдаем рандомный вопрос, приходит список с id уже игравшими вопросами"""
-        q_ids = self.request.rel_url.query.get('q_ids', [])
+        """Отдаем рандомный вопрос, приходит список с id уже игравшых вопросов"""
+        q_ids = self.request.rel_url.query.get('ids', [])
         q_number = 1
         if q_ids:
             q_ids = q_ids.split('.')
             q_number = len(q_ids) + 1
 
-        qs = await request.app['models']['questions'].get_random_question(q_number)
+        qs = await self.request.app['models']['questions'].get_random_question(q_number)
 
         if len(qs) <= len(q_ids):
             return web.json_response({'warning': 'no more questions'})
@@ -68,10 +68,18 @@ class AdminPanel(web.View):
 class Game(web.View):
 
     @aiohttp_jinja2.template('question.html')
-    async def get(request):
+    async def get(self):
         """Стартует игру, отдает 6 вопросов"""
-        qs = await request.app['models']['questions'].get_random_question(3)
+        qs = await self.request.app['models']['questions'].get_random_question(3)
         return {'questions': qs, 'q_ids': '.'.join([q['_id'] for q in qs])}
+
+
+class GameMobile(web.View):
+
+    async def get(self):
+        """Стартует игру, отдает 6 вопросов"""
+        qs = await self.request.app['models']['questions'].get_random_question(3)
+        return web.json_response(qs)
 
 
 @aiohttp_jinja2.template('create_question_form.html')
@@ -90,5 +98,5 @@ async def contacts(request):
 
 
 async def main_redirect(request):
-    location = request.app.router['question'].url_for()
+    location = request.app.router['start_game'].url_for()
     raise web.HTTPFound(location=location)
