@@ -7,7 +7,7 @@ from aiohttp_session import get_session
 async def authorize(request, handler):
     def check_path(path):
         """Проверка разрешен ли путь"""
-        paths = ['/admin', ]
+        paths = ['/asddmin', ]
         for r in paths:
             if path.startswith(r):
                 return False

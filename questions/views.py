@@ -8,6 +8,7 @@ class Question(web.View):
 
     async def get(self):
         """Отдаем рандомный вопрос, приходит список с id уже игравшых вопросов"""
+        # await self.request.app['models']['questions'].clear_db()
         q_ids = self.request.rel_url.query.get('ids', [])
         q_number = 1
         if q_ids:
