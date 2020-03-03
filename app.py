@@ -11,7 +11,7 @@ from middlewares import authorize
 from settings import MONGO_DB_NAME, MONGO_HOST, STATIC_PATH
 from questions.models import Question, NotConfirmedQuestion
 from auth.models import Admin
-from utils import make_redis_pool, create_redis, close_redis
+from utils import make_redis_pool, create_redis, close_redis, _check_admin
 
 
 loop = asyncio.get_event_loop()
@@ -38,6 +38,7 @@ app['models'] = {
 }
 
 app.on_startup.append(create_redis)
+app.on_startup.append(_check_admin)
 app.on_cleanup.append(close_redis)
 
 web.run_app(app)

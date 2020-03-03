@@ -1,6 +1,7 @@
 import aioredis
+from aiohttp.web import Application
 
-from settings import REDIS_HOST
+from settings import REDIS_HOST, ADMIN_LOGIN, ADMIN_PASSWORD
 
 
 async def make_redis_pool():
@@ -19,3 +20,9 @@ async def create_redis(app: Application):
 async def close_redis(app: Application):
     app['redis'].close()
     await app['redis'].wait_closed()
+
+
+async def _check_admin(app: Application):
+    if isinstance(ADMIN_LOGIN, str): 
+        if not await app['models']['admin'].get_admin(ADMIN_LOGIN):
+            await app['models']['admin'].create_admin(ADMIN_LOGIN, ADMIN_PASSWORD)

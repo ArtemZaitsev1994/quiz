@@ -8,13 +8,13 @@ from aiohttp_session import get_session
 async def authorize(request, handler):
     def check_path(path):
         """Проверка разрешен ли путь"""
-        paths = ['/asddmin', ]
+        paths = ['/admin', ]
         for r in paths:
             if path.startswith(r):
                 return False
         return True
 
-    def check_token(redis: Redis, token: str) -> bool:
+    async def check_token(redis: Redis, token: str) -> bool:
         return await redis.get(token)
 
     if check_path(request.path):
@@ -22,7 +22,7 @@ async def authorize(request, handler):
 
     session = await get_session(request)
     if session.get('token'):
-        if check_token(request.app['redis'], session['token']):
+        if await check_token(request.app['redis'], session['token']):
             return await handler(request)
 
     url = request.app.router['login'].url_for()

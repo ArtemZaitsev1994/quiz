@@ -1,7 +1,6 @@
 $(document).ready(function(){
 
     function showError(error){
-        $('#success').html('');
         $('#error').html(error);
     }
 
@@ -29,7 +28,12 @@ $(document).ready(function(){
             dataType: 'json',
             url: '/login',
             type: 'POST',
-            data: JSON.stringify(q_data)
+            data: JSON.stringify(q_data),
+            success: function(data){
+                if (data.error){
+                    showError(data.error)
+                }
+            }
         });
 
     })

@@ -3,6 +3,7 @@ from typing import Dict
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
 from settings import ADMIN_COLLECTION
+from auth.utils import hash_password
 
 
 class Admin:
@@ -11,8 +12,12 @@ class Admin:
         self.db = db
         self.collection = self.db[ADMIN_COLLECTION]
 
-    async def create_admin(self):
-        pass
+    async def create_admin(self, login, password):
+        data = {
+            'login': login,
+            'password': hash_password(password)
+        }
+        await self.collection.insert_one(data)
 
     async def check_admin(self):
         pass
@@ -21,4 +26,4 @@ class Admin:
         pass
 
     async def get_admin(self, login):
-        return self.collection.find_one({'login': login})
+        return await self.collection.find_one({'login': login})

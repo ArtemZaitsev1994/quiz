@@ -85,7 +85,7 @@ class GameMobile(web.View):
         return web.json_response(qs)
 
 
-class ExcelView(wev.View):
+class ExcelView(web.View):
 
     async def post(self):
         data = await self.request.post()

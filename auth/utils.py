@@ -6,6 +6,7 @@ import uuid
 from aiohttp import web
 from aiohttp.web_request import Request
 from aioredis import Redis
+from aiohttp_session import Session
 
 
 def hash_password(password):
@@ -37,11 +38,12 @@ def verify_password(stored_password, provided_password):
 
 def redirect(request: Request, router_name: str):
     url = request.app.router[router_name].url_for()
+    print(url)
     raise web.HTTPFound(url)
 
 
-def set_session(session: Session, redis: Redis, name: str):
-    session_uuid = uuid.uuid4().get_hex()
+async def set_session(session: Session, redis: Redis, name: str):
+    session_uuid = uuid.uuid4().hex
     session['token'] = session_uuid
     await redis.set(session_uuid, name)
-    await redis.expire(session_uuid, 60000)
+    await redis.expire(session_uuid, 1000)

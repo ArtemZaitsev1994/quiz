@@ -14,6 +14,7 @@ log.addHandler(ch)
 
 QUESTION_COLLECTION = 'quiz_questions'
 NOT_CONFIRMED_QUESTION_COLLECTION = 'not_confirmed_quiz_questions'
+ADMIN_COLLECTION = 'admin'
 
 STATIC_PATH = '/static'
 
@@ -28,5 +29,11 @@ if isfile('.env'):
     REDIS_HOST = env.tuple('REDIS_HOST')
 
     EXCEL_DIR = env.str('EXCEL_DIR')
+
+    try:
+        ADMIN_LOGIN = env.str('ADMIN_LOGIN')
+        ADMIN_PASSWORD = env.str('ADMIN_PASSWORD')
+    except envparse.ConfigurationError:
+        ADMIN_PASSWORD, ADMIN_LOGIN = None, None
 else:
     raise SystemExit('Create an env-file please.!')
