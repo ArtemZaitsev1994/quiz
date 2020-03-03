@@ -1,3 +1,4 @@
+from aioredis import Redis
 from aiohttp import web
 from aiohttp.web import middleware
 from aiohttp_session import get_session
@@ -13,12 +14,15 @@ async def authorize(request, handler):
                 return False
         return True
 
+    def check_token(redis: Redis, token: str) -> bool:
+        return await redis.get(token)
+
     if check_path(request.path):
         return await handler(request)
 
     session = await get_session(request)
     if session.get('token'):
-        if check_token(session['token']):
+        if check_token(request.app['redis'], session['token']):
             return await handler(request)
 
     url = request.app.router['login'].url_for()
