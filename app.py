@@ -10,7 +10,8 @@ from routes import routes
 from middlewares import authorize
 from settings import MONGO_DB_NAME, MONGO_HOST, STATIC_PATH
 from questions.models import Question, NotConfirmedQuestion
-from utils import make_redis_pool
+from auth.models import Admin
+from utils import make_redis_pool, create_redis, close_redis
 
 
 loop = asyncio.get_event_loop()
@@ -32,7 +33,11 @@ app.db = app.client[MONGO_DB_NAME]
 
 app['models'] = {
 	'questions': Question(app.db),
-	'not_conf_q': NotConfirmedQuestion(app.db)
+	'not_conf_q': NotConfirmedQuestion(app.db),
+	'admin': Admin(app.db)
 }
+
+app.on_startup.append(create_redis)
+app.on_cleanup.append(close_redis)
 
 web.run_app(app)
