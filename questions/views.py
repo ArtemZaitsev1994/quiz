@@ -3,6 +3,8 @@ import html
 import aiohttp_jinja2
 from aiohttp import web
 
+from settings import EXCEL_DIR
+
 
 class Question(web.View):
 
@@ -81,6 +83,25 @@ class GameMobile(web.View):
         """Стартует игру, отдает 6 вопросов"""
         qs = await self.request.app['models']['questions'].get_random_question(3)
         return web.json_response(qs)
+
+
+class ExcelView(wev.View):
+
+    async def post(self):
+        data = await self.request.post()
+
+        if not os.path.exists(EXCEL_DIR):
+            os.makedir(EXCEL_DIR)
+
+        filename = len(next(os.walk(EXCEL_DIR))[2]) + 1
+        input_file = data['file'].file
+
+        with open(os.path.join(EXCEL_DIR, f'{filename}.xlsx'), 'wb') as f:
+            f.write(input_file.read())
+
+        link = self.request.app.router['upload'].url_for().with_query({'file': filename})
+        return web.json_response({'link': link})
+
 
 
 @aiohttp_jinja2.template('create_question_form.html')
