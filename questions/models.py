@@ -18,6 +18,13 @@ class BaseQuestion:
             return False
         return bool(await self.collection.insert_one(data))
 
+    async def add_questions_many(self, questions) -> bool:
+        keys = {'category', 'text', 'complexity', 'answer'}
+        valid_q = [x for x in questions if len(keys - set(x.keys())) == 0]
+        print(valid_q)
+        return bool(await self.collection.insert_many(valid_q))
+
+
     async def update_question(self, data) -> bool:
         return bool(await self.collection.update_one(
             {'_id': ObjectId(data.pop('questions'))},

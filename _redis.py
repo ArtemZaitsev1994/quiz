@@ -18,6 +18,7 @@ async def make_redis_pool():
 
 
 def set_redis_session_storage() -> Callable:
+    ## Сессия хранятся в Redis
     loop = asyncio.get_event_loop()
     redis_pool = loop.run_until_complete(make_redis_pool())
     storage = RedisStorage(redis_pool, max_age=SESSION_TTL)

@@ -4,6 +4,7 @@ import aiohttp_jinja2
 from aiohttp import web
 
 from settings import EXCEL_DIR
+from questions.utils import set_bold_font
 
 
 class Question(web.View):
@@ -25,7 +26,7 @@ class Question(web.View):
 
         q = next((x for x in qs if str(x['_id']) not in q_ids))
         for key in ['text', 'answer']:
-            q[key] = html.unescape(q[key], quote=True)
+            q[key] = html.unescape(set_bold_font(q[key]))
         return web.json_response(q)
 
     async def post(self):
@@ -83,18 +84,8 @@ class Game(web.View):
         qs = await self.request.app['models']['questions'].get_random_question(4)
         for q in qs:
             for key in ['text', 'answer']:
-                q[key] = self.set_bold_font(html.unescape(q[key]))
+                q[key] = set_bold_font(html.unescape(q[key]))
         return {'questions': qs, 'q_ids': '.'.join([q['_id'] for q in qs])}
-
-    def set_bold_font(self, q):
-        def bold_gen():
-            while True:
-                yield '<b>'
-                yield '</b>'
-
-        bold_tag = bold_gen()
-        return q.replace('*', '{}').format(*[next(bold_tag) for x in range(q.count('*'))])
-
 
 
 class GameMobile(web.View):
