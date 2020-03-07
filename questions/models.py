@@ -18,6 +18,12 @@ class BaseQuestion:
             return False
         return bool(await self.collection.insert_one(data))
 
+    async def update_question(self, data) -> bool:
+        return bool(await self.collection.update_one(
+            {'_id': ObjectId(data.pop('questions'))},
+            {'$set': data}
+        ))
+
     async def get_part(self, page, per_page) -> List[Dict[str, Any]]:
         page = page or 1
         all_qs = self.collection.find()
@@ -44,7 +50,7 @@ class BaseQuestion:
 
     async def delete_q(self, _id) -> bool:
         result = await self.collection.delete_many({'_id': ObjectId(_id)})
-        return result
+        return bool(result)
 
     async def clear_db(self):
         await self.collection.drop()

@@ -1,7 +1,22 @@
 // валидация вопроса и отправка на сервер
 $(document).ready(function(){
 
-    categories = ['Что', 'Когда', 'Где', 'Почему']
+    var getUrlParameter = function getUrlParameter(sParam) {
+        var sPageURL = window.location.search.substring(1),
+            sURLVariables = sPageURL.split('&'),
+            sParameterName,
+            i;
+
+        for (i = 0; i < sURLVariables.length; i++) {
+            sParameterName = sURLVariables[i].split('=');
+
+            if (sParameterName[0] === sParam) {
+                return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+            }
+        }
+    };
+
+    categories = ['Что', 'Кто', 'Когда', 'Где', 'Почему']
     complexity = ['2', '3', '4']
 
     function showError(error){
@@ -35,14 +50,20 @@ $(document).ready(function(){
             return
         }
 
+        model = getUrlParameter('model')
+        if (model != 'questions'){
+            model = 'not_conf_q'
+        }
+
+
         q_data = {
             'text': $('#question_' + this_id).val(),
             'complexity': $('#complexity_' + this_id).val(),
             'category': $('#category_' + this_id).val(),
             'answer': $('#answer_' + this_id).val(),
             'type': 'questions',
-            'not_conf_id': this_id
         }
+        q_data[model] = this_id
 
         $.ajax({
             dataType: 'json',
@@ -51,6 +72,16 @@ $(document).ready(function(){
             data: JSON.stringify(q_data),
             success: function(data) {
                 $(`#${this_id}`).css('display', 'none')
+            }
+        });
+    });
+
+    $('#logout').on('click', function(e){
+        $.ajax({
+            url: '/login',
+            type: 'DELETE',
+            success: function(data) {
+                window.location = data['location']
             }
         });
     })

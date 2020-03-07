@@ -1,5 +1,10 @@
 {% extends 'base.html' %}
 
+{% block logout %}
+  <input class="btn btn-secondary" title="Logout" type="button" id="logout" value="Выйти">
+{% endblock %}
+
+
 {% block content %}
         {% for q in questions %}
             <form role="form" id="{{ q._id }}">
@@ -31,6 +36,7 @@
                         <select class="custom-select" id="category_{{q._id}}" required>
                           <option value="">Open this select menu</option>
                           <option value="Кто" {% if q.category == "Кто" %} selected {% endif %}>Кто</option>
+                          <option value="Что" {% if q.category == "Что" %} selected {% endif %}>Что</option>
                           <option value="Где" {% if q.category == "Где" %} selected {% endif %}>Где</option>
                           <option value="Когда" {% if q.category == "Когда" %} selected {% endif %}>Когда</option>
                           <option value="Почему" {% if q.category == "Почему" %} selected {% endif %}>Почему</option>
@@ -59,16 +65,22 @@
 {% endblock%}
 
 {% block pagination %}
-<nav aria-label="Page navigation example">
-  <ul class="pagination justify-content-center">
-    <li class="page-item {% if pagination.page <= 1 %}disabled{% endif %}">
-      <a class="page-link" href="{{ '/admin?page=%s'%pagination.prev|urlencode }}" tabindex="-1">Previous</a>
-    </li>
-    <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
-      <a class="page-link" href="{{ '/admin?page=%s'%pagination.next|urlencode }}">Next</a>
-    </li>
-  </ul>
-</nav>
+{% if questions %}
+  <nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
+      <li class="page-item {% if pagination.page <= 1 %}disabled{% endif %}">
+        <a class="page-link" href="{{ '/admin?page=%s'%pagination.prev|urlencode }}" tabindex="-1">Previous</a>
+      </li>
+      <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
+        <a class="page-link" href="{{ '/admin?page=%s'%pagination.next|urlencode }}">Next</a>
+      </li>
+    </ul>
+  </nav>
+{% else %}
+  <div class='col-md-8'>  
+   <p>Нет вопросов, у матросов (ахахах-хихих)</p>
+  </div>
+{% endif %}
 {% endblock %}
 
 {% block footer %}

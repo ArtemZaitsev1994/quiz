@@ -2,43 +2,33 @@ import asyncio
 import aiohttp_jinja2
 import jinja2
 from aiohttp import web
-from motor import motor_asyncio as ma
-from aiohttp_session.redis_storage import RedisStorage
-from aiohttp_session import session_middleware
 
 from routes import routes
 from middlewares import authorize
-from settings import MONGO_DB_NAME, MONGO_HOST, STATIC_PATH
-from questions.models import Question, NotConfirmedQuestion
-from auth.models import Admin
-from utils import make_redis_pool, create_redis, close_redis, _check_admin
+from settings import STATIC_PATH
+from _redis import redis_setup, set_redis_session_storage
+from _mongo import mongo_setup
 
 
-loop = asyncio.get_event_loop()
-redis_pool = loop.run_until_complete(make_redis_pool())
-storage = RedisStorage(redis_pool)
-session_redis_middleware = session_middleware(storage)
-
-app = web.Application(middlewares=[session_redis_middleware, authorize])
+## create app
+app = web.Application(middlewares=[
+    set_redis_session_storage(),
+    authorize
+])
 aiohttp_jinja2.setup(app, loader=jinja2.FileSystemLoader('templates'))
 
-# add some urls
+## add some urls
 for route in routes:
     app.router.add_route(*route[:3], name=route[3])
 app.router.add_static(STATIC_PATH, 'static', name='static')
 app['static_root_url'] = '/static'
 
-app.client = ma.AsyncIOMotorClient(MONGO_HOST)
-app.db = app.client[MONGO_DB_NAME]
+## инициализация redis, также сессии хранятся в редис
+redis_setup(app)
 
-app['models'] = {
-	'questions': Question(app.db),
-	'not_conf_q': NotConfirmedQuestion(app.db),
-	'admin': Admin(app.db)
-}
+## инициализация MongoDB
+mongo_setup(app)
 
-app.on_startup.append(create_redis)
-app.on_startup.append(_check_admin)
-app.on_cleanup.append(close_redis)
-
-web.run_app(app)
+## запуск приложения
+if __name__ == '__main__':
+    web.run_app(app)

@@ -27,6 +27,7 @@ if isfile('.env'):
     MONGO_DB_NAME = env.str('MONGO_DB_NAME')
 
     REDIS_HOST = env.tuple('REDIS_HOST')
+    SESSION_TTL = env.int('SESSION_TTL')
 
     EXCEL_DIR = env.str('EXCEL_DIR')
 

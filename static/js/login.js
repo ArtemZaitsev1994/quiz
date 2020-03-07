@@ -30,8 +30,11 @@ $(document).ready(function(){
             type: 'POST',
             data: JSON.stringify(q_data),
             success: function(data){
+                console.log(data['location'])
                 if (data.error){
                     showError(data.error)
+                } else {
+                    window.location = data['location']
                 }
             }
         });

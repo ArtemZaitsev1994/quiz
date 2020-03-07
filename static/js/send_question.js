@@ -1,7 +1,7 @@
 // валидация вопроса и отправка на сервер
 $(document).ready(function(){
 
-    categories = ['Что', 'Когда', 'Где', 'Почему']
+    categories = ['Что', 'Кто', 'Когда', 'Где', 'Почему']
     complexity = ['2', '3', '4']
 
     function showError(error){

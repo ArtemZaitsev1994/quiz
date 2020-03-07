@@ -11,6 +11,7 @@ class Question(web.View):
     async def get(self):
         """Отдаем рандомный вопрос, приходит список с id уже игравшых вопросов"""
         # await self.request.app['models']['questions'].clear_db()
+        # await self.request.app['models']['not_conf_q'].clear_db()
         q_ids = self.request.rel_url.query.get('ids', [])
         q_number = 1
         if q_ids:
@@ -23,6 +24,8 @@ class Question(web.View):
             return web.json_response({'warning': 'no more questions'})
 
         q = next((x for x in qs if str(x['_id']) not in q_ids))
+        for key in ['text', 'answer']:
+            q[key] = html.unescape(q[key], quote=True)
         return web.json_response(q)
 
     async def post(self):
@@ -38,9 +41,12 @@ class Question(web.View):
             data[key] = html.escape(data[key], quote=True)
         data['complexity'] = int(data['complexity'])
 
-        result = web.json_response(await self.request.app['models'][q_type].add_question(data))
-        if data.get('not_conf_id'):
-            await self.request.app['models']['not_conf_q'].delete_q(data['not_conf_id'])
+        if data.get('questions'):
+            result = web.json_response(await self.request.app['models'][q_type].update_question(data))
+        else:
+            result = web.json_response(await self.request.app['models'][q_type].add_question(data))
+            if data.get('not_conf_q'):
+                await self.request.app['models']['not_conf_q'].delete_q(data['not_conf_q'])
 
         return web.json_response(bool(result))
 
@@ -52,20 +58,21 @@ class AdminPanel(web.View):
         """Получаем по 10 предложенных вопросов"""
         PER_PAGE = 10
         page = self.request.rel_url.query.get('page', 1)
+        model = self.request.rel_url.query.get('model', 'not_conf_q')
         try:
             page = int(page)
         except ValueError:
             return web.HTTPBadRequest()
         if page < 0:
             page *= -1
-        qs, pagination = await self.request.app['models']['not_conf_q'].get_part(page, PER_PAGE)
+        qs, pagination = await self.request.app['models'][model].get_part(page, PER_PAGE)
 
         return {'questions': qs, 'pagination': pagination}
 
     async def delete(self):
         """Удаление вопроса из предложенных"""
         json_data = await self.request.json()
-        return await self.request.app['models']['not_conf_q'].delete_q(json_data['id'])
+        return web.json_response(await self.request.app['models'][json_data['model']].delete_q(json_data['id']))
 
 
 class Game(web.View):
@@ -73,15 +80,28 @@ class Game(web.View):
     @aiohttp_jinja2.template('question.html')
     async def get(self):
         """Стартует игру, отдает 6 вопросов"""
-        qs = await self.request.app['models']['questions'].get_random_question(3)
+        qs = await self.request.app['models']['questions'].get_random_question(4)
+        for q in qs:
+            for key in ['text', 'answer']:
+                q[key] = self.set_bold_font(html.unescape(q[key]))
         return {'questions': qs, 'q_ids': '.'.join([q['_id'] for q in qs])}
+
+    def set_bold_font(self, q):
+        def bold_gen():
+            while True:
+                yield '<b>'
+                yield '</b>'
+
+        bold_tag = bold_gen()
+        return q.replace('*', '{}').format(*[next(bold_tag) for x in range(q.count('*'))])
+
 
 
 class GameMobile(web.View):
 
     async def get(self):
         """Стартует игру, отдает 6 вопросов"""
-        qs = await self.request.app['models']['questions'].get_random_question(3)
+        qs = await self.request.app['models']['questions'].get_random_question(4)
         return web.json_response(qs)
 
 

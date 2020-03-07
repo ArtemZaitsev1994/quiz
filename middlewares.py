@@ -21,8 +21,8 @@ async def authorize(request, handler):
         return await handler(request)
 
     session = await get_session(request)
-    if session.get('token'):
-        if await check_token(request.app['redis'], session['token']):
+    if session.get('admin_token'):
+        if await check_token(request.app['redis'], session['admin_token']):
             return await handler(request)
 
     url = request.app.router['login'].url_for()
