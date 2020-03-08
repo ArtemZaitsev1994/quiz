@@ -5,7 +5,6 @@ $(document).ready(function(){
     $('.q').on('click', function(){
         var this_id = this.value
         send_data = {'ids': q_ids}
-        console.log(JSON.stringify(send_data))
 
         $.ajax({
             dataType: 'json',

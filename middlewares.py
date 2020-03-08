@@ -16,8 +16,8 @@ async def authorize(request, handler):
 
     async def check_token(redis: Redis, token: str) -> bool:
         return await redis.get(token)
-
-    if check_path(request.path):
+    
+    if check_path(request.path):    
         return await handler(request)
 
     session = await get_session(request)

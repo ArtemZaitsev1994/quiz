@@ -21,7 +21,6 @@ class BaseQuestion:
     async def add_questions_many(self, questions) -> bool:
         keys = {'category', 'text', 'complexity', 'answer'}
         valid_q = [x for x in questions if len(keys - set(x.keys())) == 0]
-        print(valid_q)
         return bool(await self.collection.insert_many(valid_q))
 
 
@@ -35,7 +34,7 @@ class BaseQuestion:
         page = page or 1
         all_qs = self.collection.find()
         count_qs = await self.collection.count_documents({})
-        has_next = count_qs > 10
+        has_next = count_qs > 10 * page
         qs = await all_qs.skip((page - 1) * per_page).limit(per_page).to_list(length=None)
         
         pagination = {
@@ -64,6 +63,8 @@ class BaseQuestion:
 
 
 class Question(BaseQuestion):
+    NAME = 'Вопросы для продакшн'
+    INTERNAL_NAME = 'questions'
 
     def __init__(self, db: AsyncIOMotorDatabase, **kw):
         super().__init__(db)
@@ -71,6 +72,8 @@ class Question(BaseQuestion):
 
 
 class NotConfirmedQuestion(BaseQuestion):
+    NAME = 'Вопросы для проверки'
+    INTERNAL_NAME = 'not_conf_q'
 
     def __init__(self, db: AsyncIOMotorDatabase, **kw):
         super().__init__(db)

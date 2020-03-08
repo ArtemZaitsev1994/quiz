@@ -11,7 +11,7 @@
 </head>
 <body>
     <div class="container-fluid mt-3">
-        <div class="row">
+        <div class="row sticky-top" style="background: white">
             <div class="col-lg-3 col-sm-0">
             </div>
             <div class="col-lg-6 col-sm-12">
@@ -40,6 +40,8 @@
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-md-2 col-sm-0">
+                            {% block models_type %}
+                            {% endblock %}
                         </div>
                         <div class="col-md-8">
                             {% block content %}

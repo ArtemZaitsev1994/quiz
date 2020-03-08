@@ -4,8 +4,14 @@
   <input class="btn btn-secondary" title="Logout" type="button" id="logout" value="Выйти">
 {% endblock %}
 
+{% block models_type %}
+  {% for model in all_models %}
+    <a href="{{ '/admin?model=%s'%model[1]|urlencode }}">{{ model[0] }}</a>
+  {% endfor %}
+{% endblock %}
 
 {% block content %}
+    {% if questions %}
         {% for q in questions %}
             <form role="form" id="{{ q._id }}">
 
@@ -13,7 +19,7 @@
                     <label for="question_{{q._id}}">
                         Вопрос
                     </label>
-                    <textarea class="form-control" id="question_{{q._id}}" rows="3" required>{{ q.text }}</textarea>
+                    <textarea class="form-control" id="question_{{q._id}}" rows="3" q_id="{{ q._id }}" required>{{ q.text }}</textarea>
                 </div>
 
                 <div class="form-group row">
@@ -49,7 +55,7 @@
                     <label for="answer_{{q._id}}">
                         Ответ
                     </label>
-                    <textarea class="form-control" id="answer_{{q._id}}" rows="3" required>{{ q.answer }}</textarea>
+                    <textarea class="form-control" id="answer_{{q._id}}" rows="3" q_id="{{ q._id }}" required>{{ q.answer }}</textarea>
 
                 </div>
 
@@ -62,25 +68,24 @@
             <hr>
             <hr>
         {% endfor %}
+    {% else %}
+       <p>There is pusto</p>
+    {% endif %}
 {% endblock%}
 
 {% block pagination %}
-{% if questions %}
-  <nav aria-label="Page navigation example">
-    <ul class="pagination justify-content-center">
-      <li class="page-item {% if pagination.page <= 1 %}disabled{% endif %}">
-        <a class="page-link" href="{{ '/admin?page=%s'%pagination.prev|urlencode }}" tabindex="-1">Previous</a>
-      </li>
-      <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
-        <a class="page-link" href="{{ '/admin?page=%s'%pagination.next|urlencode }}">Next</a>
-      </li>
-    </ul>
-  </nav>
-{% else %}
-  <div class='col-md-8'>  
-   <p>Нет вопросов, у матросов (ахахах-хихих)</p>
-  </div>
-{% endif %}
+  {% if questions %}
+    <nav aria-label="Page navigation example">
+      <ul class="pagination justify-content-center">
+        <li class="page-item {% if pagination.page <= 1 %}disabled{% endif %}">
+          <a class="page-link" href="{{ pagination.prev }}" tabindex="-1">Previous</a>
+        </li>
+        <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
+          <a class="page-link" href="{{ pagination.next }}">Next</a>
+        </li>
+      </ul>
+    </nav>
+  {% endif %}
 {% endblock %}
 
 {% block footer %}

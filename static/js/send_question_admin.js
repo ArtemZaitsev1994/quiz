@@ -28,8 +28,10 @@ $(document).ready(function(){
         $('#success').html('Вопрос успешно отправлен.');
     }
 
-    $('.submit').click(function(e){
-        var this_id = this.getAttribute('q_id')
+    send_question = (this_id=null) => {
+        if (this_id === null) {
+            this_id = this.getAttribute('q_id')
+        }
         errors = ''
 
         if ($('#question_' + this_id).val().length < 10) {
@@ -74,7 +76,15 @@ $(document).ready(function(){
                 $(`#${this_id}`).css('display', 'none')
             }
         });
-    });
+    }
+
+    $('#submit').click(send_question)
+    $('textarea').on('keydown', function(e){
+        if (e.keyCode == 13 & !e.shiftKey) {
+            e.preventDefault()
+            send_question(this.getAttribute('q_id'))
+        }
+    })
 
     $('#logout').on('click', function(e){
         $.ajax({

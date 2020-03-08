@@ -30,7 +30,6 @@ $(document).ready(function(){
             type: 'DELETE',
             data: JSON.stringify({'id': this_id, 'model': model}),
             success: function(data) {
-                console.log(data)
                 $(`#${this_id}`).css('display', 'none')
             }
         });

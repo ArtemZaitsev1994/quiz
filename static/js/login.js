@@ -3,8 +3,8 @@ $(document).ready(function(){
     function showError(error){
         $('#error').html(error);
     }
-
-    $('#submit').click(function(e){
+    
+    login = function(e){
         errors = ''
 
         if ($('#Password').val().length < 1) {
@@ -30,7 +30,6 @@ $(document).ready(function(){
             type: 'POST',
             data: JSON.stringify(q_data),
             success: function(data){
-                console.log(data['location'])
                 if (data.error){
                     showError(data.error)
                 } else {
@@ -39,5 +38,12 @@ $(document).ready(function(){
             }
         });
 
+    }
+
+    $('#submit').click(login)
+    $('input').on('keydown', function(e){
+        if (e.keyCode == 13) {
+            login()
+        }
     })
 });

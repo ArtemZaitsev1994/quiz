@@ -60,6 +60,8 @@ class AdminPanel(web.View):
         PER_PAGE = 10
         page = self.request.rel_url.query.get('page', 1)
         model = self.request.rel_url.query.get('model', 'not_conf_q')
+        all_models = [(x.NAME, x.INTERNAL_NAME) for x in self.request.app['models'].values()]
+
         try:
             page = int(page)
         except ValueError:
@@ -67,8 +69,11 @@ class AdminPanel(web.View):
         if page < 0:
             page *= -1
         qs, pagination = await self.request.app['models'][model].get_part(page, PER_PAGE)
+        for i in ('prev', 'next'):
+            if pagination[i] is not None:
+                pagination[i] = self.request.app.router['admin'].url_for().with_query({'model': model, 'page': pagination[i]})
 
-        return {'questions': qs, 'pagination': pagination}
+        return {'questions': qs, 'pagination': pagination, 'model': model, 'all_models': all_models}
 
     async def delete(self):
         """Удаление вопроса из предложенных"""

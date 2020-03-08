@@ -13,7 +13,7 @@ $(document).ready(function(){
         $('#success').html('Вопрос успешно отправлен.');
     }
 
-    $('#submit').click(function(e){
+    send_question = function(){
         errors = ''
 
         if ($('#question').val().length < 10) {
@@ -48,10 +48,17 @@ $(document).ready(function(){
             type: 'POST',
             data: JSON.stringify(q_data),
             success: function(data) {
-                console.log(data)
                 showSucces()
             }
         });
 
+    }
+
+    $('#submit').click(send_question)
+    $('textarea').on('keydown', function(e){
+        if (e.keyCode == 13 & !e.shiftKey) {
+            e.preventDefault()
+            send_question()
+        }
     })
 });

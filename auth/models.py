@@ -7,6 +7,8 @@ from auth.utils import hash_password
 
 
 class Admin:
+    NAME = 'Администраторы'
+    INTERNAL_NAME = 'admin'
 
     def __init__(self, db: AsyncIOMotorDatabase):
         self.db = db
