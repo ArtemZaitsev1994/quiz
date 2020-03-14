@@ -5,7 +5,7 @@ from aiohttp import web
 
 from routes import routes
 from middlewares import authorize
-from settings import STATIC_PATH
+from settings import STATIC_PATH, PORT
 from _redis import redis_setup, set_redis_session_storage
 from _mongo import mongo_setup
 
@@ -31,4 +31,4 @@ mongo_setup(app)
 
 ## запуск приложения
 if __name__ == '__main__':
-    web.run_app(app)
+    web.run_app(app, port=PORT)

@@ -31,6 +31,8 @@ if isfile('.env'):
 
     EXCEL_DIR = env.str('EXCEL_DIR')
 
+    PORT = env.int('PORT')
+
     try:
         ADMIN_LOGIN = env.str('ADMIN_LOGIN')
         ADMIN_PASSWORD = env.str('ADMIN_PASSWORD')
