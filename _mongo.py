@@ -29,10 +29,11 @@ def mongo_setup(app: Application):
 
 
 async def fill_db(app: Application):
-    async with AIOFile('questions.json', 'r') as f:
-        qs, _ = await app['models']['questions'].get_part(None, 10)
-        if len(qs) > 0:
-            return
+    qs, _ = await app['models']['questions'].get_part(None, 10)
+    if len(qs) > 0:
+        return
 
+    async with AIOFile('questions.json', 'r') as f:
         questions = json.loads(await f.read())
-        await app['models']['questions'].add_questions_many(questions)
+
+    await app['models']['questions'].add_questions_many(questions)

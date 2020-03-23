@@ -1,0 +1,25 @@
+enum Categories {
+    WHAT
+    WHO
+    WHEN
+    WHERE
+    WHY
+}
+
+enum Complexity {
+    ONE
+    TWO
+    THREE
+}
+
+type Questions {
+    category: Categories!
+    text: String!
+    complexity: Complexity!
+    answer: String!
+}
+
+type Query {
+    random_question(ids: [Int]): Questions
+    questions: [Questions]
+}

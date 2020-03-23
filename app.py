@@ -8,6 +8,7 @@ from middlewares import authorize
 from settings import STATIC_PATH, PORT
 from _redis import redis_setup, set_redis_session_storage
 from _mongo import mongo_setup
+from _graphql import graphql_setup
 
 
 ## create app
@@ -28,6 +29,9 @@ redis_setup(app)
 
 ## инициализация MongoDB
 mongo_setup(app)
+
+## инициализация GraphQL
+app = graphql_setup(app) 
 
 ## запуск приложения
 if __name__ == '__main__':
